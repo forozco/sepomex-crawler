@@ -1,23 +1,32 @@
 {
   "name": "sepomex-crawler",
-  "version": "1.0.0",
-  "description": "Crawler automatizado para descargar y procesar códigos postales de SEPOMEX",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Microservicio con API REST para crawler automatizado de códigos postales SEPOMEX",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node src/app.js",
+    "start:api": "node src/app.js",
+    "start:crawler": "node src/index.js",
     "check": "node src/index.js --check-only",
     "download": "node src/index.js --force-download",
     "cron": "node src/cron.js",
     "history": "node src/history.js",
     "history:all": "node src/history.js all",
     "history:latest": "node src/history.js latest",
-    "history:compare": "node src/history.js compare"
+    "history:compare": "node src/history.js compare",
+    "dev": "NODE_ENV=development nodemon src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "sepomex",
     "crawler",
     "codigos-postales",
-    "mexico"
+    "mexico",
+    "api",
+    "rest",
+    "microservice",
+    "prometheus",
+    "kubernetes"
   ],
   "author": "",
   "license": "MIT",
@@ -26,6 +35,14 @@
     "cheerio": "^1.0.0-rc.12",
     "node-cron": "^3.0.3",
     "adm-zip": "^0.5.10",
-    "iconv-lite": "^0.6.3"
+    "iconv-lite": "^0.6.3",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "compression": "^1.7.4",
+    "helmet": "^7.1.0",
+    "prom-client": "^15.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }

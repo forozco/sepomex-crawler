@@ -3,8 +3,8 @@ FROM node:20-alpine
 
 # Metadata
 LABEL maintainer="SEPOMEX Crawler"
-LABEL description="Crawler automatizado para códigos postales de SEPOMEX"
-LABEL version="1.0.0"
+LABEL description="Microservicio con API REST para códigos postales de SEPOMEX"
+LABEL version="2.0.0"
 
 # Instalar dependencias del sistema
 RUN apk add --no-cache \
@@ -43,12 +43,12 @@ USER sepomex
 # Volumes para persistencia de datos
 VOLUME ["/app/data", "/app/downloads", "/app/logs"]
 
-# Puerto (aunque no se usa, lo dejamos por si en el futuro se agrega API)
-EXPOSE 3000
+# Puerto para API REST
+EXPOSE 9000
 
-# Healthcheck
-HEALTHCHECK --interval=1h --timeout=10s --start-period=5s --retries=3 \
-    CMD node -e "console.log('OK')" || exit 1
+# Healthcheck usando el endpoint de la API
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:9000/healthz || exit 1
 
-# Comando por defecto: ejecutar en modo cron
-CMD ["node", "src/cron.js"]
+# Comando por defecto: ejecutar microservicio (API + Cron)
+CMD ["node", "src/app.js"]

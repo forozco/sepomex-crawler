@@ -28,5 +28,8 @@ module.exports = {
   RETRY_MAX_DELAY: 60000, // 60 segundos máximo
 
   // Encoding del archivo TXT
-  TXT_ENCODING: 'latin1'
+  TXT_ENCODING: 'latin1',
+
+  // Puerto de la API
+  PORT: process.env.PORT || 9000
 };

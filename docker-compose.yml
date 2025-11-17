@@ -8,10 +8,15 @@ services:
     container_name: sepomex-crawler
     restart: unless-stopped
 
+    # Puertos
+    ports:
+      - "9000:9000"
+
     # Variables de entorno
     environment:
       - TZ=America/Mexico_City
       - NODE_ENV=production
+      - PORT=9000
       # Descomentar para personalizar:
       # - CRON_SCHEDULE=0 3 * * 1
       # - DOWNLOAD_TIMEOUT=300000

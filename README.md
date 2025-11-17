@@ -1,19 +1,49 @@
-# 🚀 SEPOMEX Crawler
+# SEPOMEX Crawler
 
-Crawler automatizado para descargar y procesar códigos postales de SEPOMEX (Servicio Postal Mexicano).
+Microservicio con API REST para descargar y consultar códigos postales de SEPOMEX (Servicio Postal Mexicano).
 
-## 📋 Características
+## Características
 
-- ✅ Descarga automática de códigos postales desde SEPOMEX
-- ✅ Detección de nuevas versiones
-- ✅ Conversión de TXT a JSON optimizado
-- ✅ Historial completo de versiones
-- ✅ Programación automática (cron)
-- ✅ Logs detallados
-- ✅ Integración con proyecto Angular
-- ✅ **Contenedor Docker incluido**
+- API REST para consultas en tiempo real
+- Descarga automática de códigos postales desde SEPOMEX
+- Detección de nuevas versiones
+- Conversión de TXT a JSON optimizado
+- Historial completo de versiones
+- Programación automática (cron)
+- Health checks para Kubernetes
+- Métricas Prometheus
+- Logs profesionales sin emojis
+- Contenedor Docker incluido
+- Lightweight: ~20MB RAM usage
+- 157,284+ registros, 31,929+ códigos postales
 
-## 🐳 Inicio Rápido con Docker (Recomendado)
+## API REST
+
+El servicio expone una API REST en el puerto 9000 para consultas en tiempo real.
+
+**Documentación completa:** Ver [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
+
+**Endpoints principales:**
+- `GET /api/postal-codes/:code` - Consultar código postal específico
+- `GET /api/postal-codes/search` - Buscar por estado, ciudad, municipio, colonia
+- `GET /api/postal-codes` - Listar todos (paginado)
+- `GET /health` - Health check completo
+- `GET /metrics` - Métricas Prometheus
+- `GET /api/versions/latest` - Información de versión actual
+
+**Ejemplo:**
+```bash
+# Consultar código postal
+curl http://localhost:9000/api/postal-codes/06600
+
+# Buscar en Jalisco
+curl "http://localhost:9000/api/postal-codes/search?state=Jalisco&limit=10"
+
+# Health check
+curl http://localhost:9000/health
+```
+
+## Inicio Rápido con Docker (Recomendado)
 
 ### Opción 1: Script interactivo
 
