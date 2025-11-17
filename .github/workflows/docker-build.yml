@@ -12,36 +12,63 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies locally (to generate package-lock.json if needed)
+      run: |
+        if [ ! -f package-lock.json ]; then
+          npm install
+        fi
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v3
 
     - name: Build Docker image
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v5
       with:
         context: .
         push: false
         tags: sepomex-crawler:test
+        load: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    - name: Test container runs
+    - name: Test container starts
       run: |
         docker run --rm sepomex-crawler:test node -e "console.log('Container OK')"
 
-    - name: Test check command
+    - name: Test API Server
       run: |
-        docker run --rm \
-          -v ${{ github.workspace }}/data:/app/data \
-          sepomex-crawler:test \
-          node src/index.js --check-only || true
+        # Iniciar contenedor en background
+        docker run -d --name sepomex-test \
+          -p 9000:9000 \
+          -e PORT=9000 \
+          sepomex-crawler:test
+
+        # Esperar a que el API inicie
+        sleep 10
+
+        # Probar healthcheck
+        curl -f http://localhost:9000/healthz || exit 1
+
+        # Probar API info
+        curl -f http://localhost:9000/api || exit 1
+
+        # Detener contenedor
+        docker stop sepomex-test
+        docker rm sepomex-test
 
     - name: Upload artifacts
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-logs
         path: |
           data/
           logs/
+        retention-days: 7
