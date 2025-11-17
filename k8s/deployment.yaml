@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sepomex-crawler
+  namespace: default
+  labels:
+    app: sepomex-crawler
+    version: v1
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate  # Only one instance should run to avoid duplicate downloads
+  selector:
+    matchLabels:
+      app: sepomex-crawler
+  template:
+    metadata:
+      labels:
+        app: sepomex-crawler
+        version: v1
+    spec:
+      # Security context for the pod
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+
+      containers:
+      - name: sepomex-crawler
+        image: sepomex-crawler:latest
+        imagePullPolicy: IfNotPresent
+
+        # Command runs the cron scheduler
+        command: ["node", "src/cron.js"]
+
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: sepomex-crawler-config
+
+        # Resource limits and requests
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+
+        # Volume mounts for persistence
+        volumeMounts:
+        - name: data
+          mountPath: /app/data
+        - name: downloads
+          mountPath: /app/downloads
+        - name: logs
+          mountPath: /app/logs
+
+        # Liveness probe - check if container is alive
+        livenessProbe:
+          exec:
+            command:
+            - node
+            - -e
+            - console.log('OK')
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          timeoutSeconds: 10
+          failureThreshold: 3
+
+        # Readiness probe - check if container is ready
+        readinessProbe:
+          exec:
+            command:
+            - node
+            - -e
+            - console.log('OK')
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # Security context for the container
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+
+      # Volumes
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: sepomex-data
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: sepomex-downloads
+      - name: logs
+        persistentVolumeClaim:
+          claimName: sepomex-logs
+
+      # Restart policy
+      restartPolicy: Always

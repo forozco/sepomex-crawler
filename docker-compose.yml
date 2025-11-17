@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  sepomex-crawler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sepomex-crawler
+    restart: unless-stopped
+
+    # Variables de entorno
+    environment:
+      - TZ=America/Mexico_City
+      - NODE_ENV=production
+      # Descomentar para personalizar:
+      # - CRON_SCHEDULE=0 3 * * 1
+      # - DOWNLOAD_TIMEOUT=300000
+
+    # Volúmenes para persistencia
+    volumes:
+      # Datos persistentes
+      - ./data:/app/data
+      - ./downloads:/app/downloads
+      - ./logs:/app/logs
+
+      # Opcional: Configuración personalizada
+      # - ./src/config.js:/app/src/config.js:ro
+
+    # Recursos limitados (opcional)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Red (si necesitas conectar con otros servicios)
+    networks:
+      - sepomex-network
+
+networks:
+  sepomex-network:
+    driver: bridge

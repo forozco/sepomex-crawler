@@ -1,0 +1,34 @@
+# Node modules
+node_modules/
+npm-debug.log
+
+# Archivos descargados
+downloads/*.zip
+downloads/*.txt
+
+# Logs
+logs/*.log
+
+# Git
+.git/
+.gitignore
+
+# Documentación
+README.md
+QUICK_START.md
+DOCKER.md
+
+# Ejemplos
+.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Datos (se montarán como volúmenes)
+data/*.json
+data/*.txt

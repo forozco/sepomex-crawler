@@ -1,0 +1,31 @@
+{
+  "name": "sepomex-crawler",
+  "version": "1.0.0",
+  "description": "Crawler automatizado para descargar y procesar códigos postales de SEPOMEX",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "check": "node src/index.js --check-only",
+    "download": "node src/index.js --force-download",
+    "cron": "node src/cron.js",
+    "history": "node src/history.js",
+    "history:all": "node src/history.js all",
+    "history:latest": "node src/history.js latest",
+    "history:compare": "node src/history.js compare"
+  },
+  "keywords": [
+    "sepomex",
+    "crawler",
+    "codigos-postales",
+    "mexico"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "node-cron": "^3.0.3",
+    "adm-zip": "^0.5.10",
+    "iconv-lite": "^0.6.3"
+  }
+}

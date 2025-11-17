@@ -1,0 +1,105 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sepomex-crawler-job
+  namespace: default
+  labels:
+    app: sepomex-crawler
+    type: cronjob
+spec:
+  # Schedule: Every Monday at 3:00 AM (Mexico City time)
+  # Note: K8s CronJob uses UTC, so adjust accordingly
+  # 3 AM Mexico City = 9 AM UTC (during standard time)
+  schedule: "0 9 * * 1"
+
+  # Timezone support (requires Kubernetes 1.25+)
+  timeZone: "America/Mexico_City"
+
+  # Job history limits
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+
+  # Concurrency policy - don't allow concurrent runs
+  concurrencyPolicy: Forbid
+
+  # Starting deadline in seconds
+  startingDeadlineSeconds: 600
+
+  jobTemplate:
+    metadata:
+      labels:
+        app: sepomex-crawler
+        type: cronjob
+    spec:
+      # Backoff limit for failed jobs
+      backoffLimit: 2
+
+      # Time to keep completed pods
+      ttlSecondsAfterFinished: 86400  # 24 hours
+
+      template:
+        metadata:
+          labels:
+            app: sepomex-crawler
+            type: cronjob-pod
+        spec:
+          # Security context for the pod
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            fsGroup: 1001
+
+          # Restart policy for jobs
+          restartPolicy: OnFailure
+
+          containers:
+          - name: sepomex-crawler
+            image: sepomex-crawler:latest
+            imagePullPolicy: IfNotPresent
+
+            # Command runs the crawler once with force download
+            command: ["node", "src/index.js", "--force-download"]
+
+            # Environment variables from ConfigMap
+            envFrom:
+            - configMapRef:
+                name: sepomex-crawler-config
+
+            # Resource limits and requests
+            resources:
+              limits:
+                cpu: "500m"
+                memory: "512Mi"
+              requests:
+                cpu: "250m"
+                memory: "256Mi"
+
+            # Volume mounts for persistence
+            volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - name: downloads
+              mountPath: /app/downloads
+            - name: logs
+              mountPath: /app/logs
+
+            # Security context for the container
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                - ALL
+
+          # Volumes
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: sepomex-data
+          - name: downloads
+            persistentVolumeClaim:
+              claimName: sepomex-downloads
+          - name: logs
+            persistentVolumeClaim:
+              claimName: sepomex-logs

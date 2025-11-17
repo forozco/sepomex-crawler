@@ -1,0 +1,47 @@
+name: Docker Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: false
+        tags: sepomex-crawler:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Test container runs
+      run: |
+        docker run --rm sepomex-crawler:test node -e "console.log('Container OK')"
+
+    - name: Test check command
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}/data:/app/data \
+          sepomex-crawler:test \
+          node src/index.js --check-only || true
+
+    - name: Upload artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-logs
+        path: |
+          data/
+          logs/
