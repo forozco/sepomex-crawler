@@ -31,5 +31,8 @@ module.exports = {
   TXT_ENCODING: 'latin1',
 
   // Puerto de la API
-  PORT: process.env.PORT || 9000
+  PORT: process.env.PORT || 9000,
+
+  // Ruta opcional para copiar archivos a un proyecto Angular
+  ANGULAR_ASSETS_PATH: process.env.ANGULAR_ASSETS_PATH || null
 };

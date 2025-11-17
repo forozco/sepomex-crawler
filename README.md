@@ -426,11 +426,13 @@ Edita `docker-compose.yml`:
 
 ```yaml
 environment:
-  - TZ=America/Mexico_City        # Zona horaria
-  - NODE_ENV=production           # Ambiente
-  - PORT=9000                     # Puerto del API
-  - CRON_SCHEDULE=0 3 * * 1       # Lunes 3:00 AM
-  - DOWNLOAD_TIMEOUT=300000       # Timeout: 5 minutos
+  - TZ=America/Mexico_City
+  - NODE_ENV=production
+  - PORT=9000
+  - CRON_SCHEDULE=0 3 * * 1
+  - DOWNLOAD_TIMEOUT=300000
+  # Opcional: Copia los archivos a un proyecto Angular
+  # - ANGULAR_ASSETS_PATH=/ruta/a/tu/proyecto/angular/src/assets
 ```
 
 ### Configuración Local
@@ -595,6 +597,18 @@ docker exec sepomex-crawler node src/index.js --check-only
 
 # Forzar descarga
 docker exec sepomex-crawler node src/index.js --force-download
+```
+
+### Testing
+
+El proyecto utiliza [Jest](https://jestjs.io/) para pruebas unitarias.
+
+```bash
+# Ejecutar todos los tests
+npm test
+
+# Ejecutar tests en modo "watch"
+npm test -- --watch
 ```
 
 ---

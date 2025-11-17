@@ -152,14 +152,19 @@ class FileProcessor {
   }
 
   /**
-   * Copia archivos al proyecto de Angular
+   * Copia archivos al proyecto de Angular (opcional)
    */
   async copyToAngularProject(txtPath, jsonPath) {
-    try {
-      const angularAssetsPath = path.join(__dirname, '../../../frontend/internet/src/assets');
+    const angularAssetsPath = config.ANGULAR_ASSETS_PATH;
 
+    if (!angularAssetsPath) {
+      logger.info('La copia a proyecto Angular está deshabilitada (ANGULAR_ASSETS_PATH no definido)');
+      return false;
+    }
+
+    try {
       if (!fs.existsSync(angularAssetsPath)) {
-        logger.warn('No se encontró el directorio de assets de Angular');
+        logger.warn(`El directorio de assets de Angular no existe: ${angularAssetsPath}`);
         return false;
       }
 
@@ -167,12 +172,12 @@ class FileProcessor {
       const txtFileName = path.basename(txtPath);
       const txtDestPath = path.join(angularAssetsPath, txtFileName);
       fs.copyFileSync(txtPath, txtDestPath);
-      logger.success(`Archivo TXT copiado a Angular: ${txtFileName}`);
+      logger.success(`Archivo TXT copiado a Angular: ${txtDestPath}`);
 
       // Copiar JSON
       const jsonDestPath = path.join(angularAssetsPath, 'postal-codes.json');
       fs.copyFileSync(jsonPath, jsonDestPath);
-      logger.success('Archivo JSON copiado a Angular: postal-codes.json');
+      logger.success(`Archivo JSON copiado a Angular: ${jsonDestPath}`);
 
       return true;
     } catch (error) {
