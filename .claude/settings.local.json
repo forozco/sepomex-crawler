@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker-compose down:*)",
+      "Bash(docker pull:*)",
+      "Bash(docker info:*)",
+      "Bash(ping:*)",
+      "Bash(for i in {1..3})",
+      "Bash(do echo \"Intento $i...\")",
+      "Bash(break)",
+      "Bash(done)",
+      "Bash(docker-compose build:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker-compose logs:*)",
+      "Bash(curl:*)",
+      "Bash(docker exec:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

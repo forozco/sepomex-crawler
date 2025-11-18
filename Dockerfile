@@ -1,5 +1,5 @@
 # Dockerfile para SEPOMEX Crawler
-FROM node:20-alpine
+FROM node:20-slim
 
 # Metadata
 LABEL maintainer="SEPOMEX Crawler"
@@ -7,10 +7,11 @@ LABEL description="Microservicio con API REST para códigos postales de SEPOMEX"
 LABEL version="2.0.0"
 
 # Instalar dependencias del sistema
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     tzdata \
     curl \
-    bash
+    bash \
+    && rm -rf /var/lib/apt/lists/*
 
 # Establecer timezone a Mexico City
 ENV TZ=America/Mexico_City
@@ -33,8 +34,8 @@ COPY src/ ./src/
 RUN mkdir -p data downloads logs
 
 # Crear usuario no-root para seguridad
-RUN addgroup -g 1001 sepomex && \
-    adduser -D -u 1001 -G sepomex sepomex && \
+RUN groupadd -g 1001 sepomex && \
+    useradd -r -u 1001 -g sepomex -s /bin/bash -d /app sepomex && \
     chown -R sepomex:sepomex /app
 
 # Cambiar a usuario no-root
